@@ -66,6 +66,7 @@ class BrakeBanner{
 	createButton() {
 		const {lever, bikeContainer, loader} = this
 		const btnContainer = new PIXI.Container()
+		
 		this.app.stage.addChild(btnContainer)
 		let btn = new PIXI.Sprite(loader.resources['btn'].texture);
 		let btn_circle = new PIXI.Sprite(loader.resources['btn_circle'].texture);
@@ -94,22 +95,19 @@ class BrakeBanner{
 		btnContainer.interactive = true
 		btnContainer.buttonMode = true
 		btnContainer.on('mousedown',()=>{
-			//刹车动画
-			gsap.to(lever, {duration: .6, rotation: Math.PI / 180 * -30})
-			//自行车下移
-			gsap.to(bikeContainer,{duration:.4, x: window.innerWidth - bikeContainer.width, y: window.innerHeight - bikeContainer.height +20});
-			btnContainer.removeChild(btn_circle)
+			this.pause()
 			btnContainer.on('mouseup',()=>{
 				gsap.to(lever, {duration: .6, rotation:  Math.PI  * -15 / 180})
 				gsap.to(bikeContainer,{duration:.4, x: window.innerWidth - bikeContainer.width, y: window.innerHeight - bikeContainer.height})
 				btnContainer.addChild(btn_circle);
+				this.start()
 			})
-			this.btnContainer = btnContainer
 		})
 		btnContainer.addChild(btn);
 		btnContainer.addChild(btn_circle);
 		btnContainer.addChild(btn_circle2);
 		this.btnContainer = btnContainer
+		this.btn_circle = btn_circle
 	}
 	// 粒子容器 
 	creatParticle() {
@@ -141,28 +139,49 @@ class BrakeBanner{
 			}
 			particle.x = x;
 			particle.y = y;
-			let speed = 0;
-			let move = ()=>{
-				speed += .5
-				speed = Math.min(speed,20)
-				particles.forEach((item, i)=>{
-					let pItem = particles[i];
-					pItem.gr.y += speed;
-					// item.y +=speed
-					if(speed>=20){
-						pItem.gr.scale.x = 0.03;
-						pItem.gr.scale.y = 40;
-					}
-				// 当粒子移动超出范围时回到顶部
-				if(pItem.gr.y>innerWidth)	pItem.gr.y=0;
-				})
-			}
-			this.move = move
 			particleContaner.addChild(particle)
-			gsap.ticker.add(move)
-
 			particles.push(pItem);
 		}
+		let speed = 0;
+		let move = ()=>{
+			speed += .5
+			speed = Math.min(speed,20)
+			particles.forEach((item, i)=>{
+				let pItem = particles[i];
+				pItem.gr.y += speed;
+				if(speed>=20){
+					pItem.gr.scale.x = 0.03;
+					pItem.gr.scale.y = 40;
+				}
+			// 当粒子移动超出范围时回到顶部
+			if(pItem.gr.y>innerWidth)	pItem.gr.y=0;
+			})
+		}
+		this.move = move
+		this.speed = speed
 		this.particles = particles
+		this.start();
 	}
+	start(){
+		this.speed = 0;
+		gsap.ticker.add(this.move)
+	}
+	pause(){
+		const {particles, lever, bikeContainer, btnContainer, btn_circle} = this
+		//刹车动画
+		gsap.to(lever, {duration: .6, rotation: Math.PI / 180 * -30})
+		//自行车下移
+		gsap.to(bikeContainer,{duration:.4, x: window.innerWidth - bikeContainer.width, y: window.innerHeight - bikeContainer.height +20});
+		btnContainer.removeChild(btn_circle)
+		// 移除粒子运动
+		gsap.ticker.remove(this.move)
+		// 粒子回弹动画
+		for(let i = 0;i<particles.length;i++){
+			let pItem = particles[i];
+			pItem.gr.scale.y = 1;
+			pItem.gr.scale.x = 1;
+			gsap.to(pItem.gr,{duration:.6,x:pItem.sx,y:pItem.sy,ease:'elastic.out'});
+		}
+	}
+
 }
