@@ -79,12 +79,32 @@ class BrakeBanner{
 		btn_circle2.pivot.y = btn_circle.height / 2
 
 		btn_circle.scale.x = btn_circle.scale.y = .8
+		// 动画
+		gsap.to(btn_circle.scale, {duration:1, x:1.3, y:1.3, repeat: -1})
+		gsap.to(btn_circle, {duration:1, alpha:0, repeat: -1})
 		// 缩小一半
 		btnContainer.scale.x = .5
 		btnContainer.scale.y = .5
 		// 位置偏移 
 		btnContainer.x = window.innerWidth - 300;
 		btnContainer.y = window.innerHeight - 350;
+
+		// 按钮按下事件
+		btnContainer.interactive = true
+		btnContainer.buttonMode = true
+		btnContainer.on('mousedown',()=>{
+			//刹车动画
+			gsap.to(lever, {duration: .6, rotation: Math.PI / 180 * -30})
+			//自行车下移
+			gsap.to(bikeContainer,{duration:.4, x: window.innerWidth - bikeContainer.width, y: window.innerHeight - bikeContainer.height +20});
+			btnContainer.removeChild(btn_circle)
+			btnContainer.on('mouseup',()=>{
+				gsap.to(lever, {duration: .6, rotation:  Math.PI  * -15 / 180})
+				gsap.to(bikeContainer,{duration:.4, x: window.innerWidth - bikeContainer.width, y: window.innerHeight - bikeContainer.height})
+				btnContainer.addChild(btn_circle);
+			})
+			this.btnContainer = btnContainer
+		})
 		btnContainer.addChild(btn);
 		btnContainer.addChild(btn_circle);
 		btnContainer.addChild(btn_circle2);
