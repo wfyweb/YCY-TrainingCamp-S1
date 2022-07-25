@@ -141,9 +141,26 @@ class BrakeBanner{
 			}
 			particle.x = x;
 			particle.y = y;
-			
-
+			let speed = 0;
+			let move = ()=>{
+				speed += .5
+				speed = Math.min(speed,20)
+				particles.forEach((item, i)=>{
+					let pItem = particles[i];
+					pItem.gr.y += speed;
+					// item.y +=speed
+					if(speed>=20){
+						pItem.gr.scale.x = 0.03;
+						pItem.gr.scale.y = 40;
+					}
+				// 当粒子移动超出范围时回到顶部
+				if(pItem.gr.y>innerWidth)	pItem.gr.y=0;
+				})
+			}
+			this.move = move
 			particleContaner.addChild(particle)
+			gsap.ticker.add(move)
+
 			particles.push(pItem);
 		}
 		this.particles = particles
