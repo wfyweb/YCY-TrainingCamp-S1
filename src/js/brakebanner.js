@@ -31,6 +31,7 @@ class BrakeBanner{
 		loader.onComplete.add(() => {
 			that.createBike()
 			that.createButton()
+			that.creatParticle()
 		})
 	}
 	createBike(){
@@ -109,5 +110,42 @@ class BrakeBanner{
 		btnContainer.addChild(btn_circle);
 		btnContainer.addChild(btn_circle2);
 		this.btnContainer = btnContainer
+	}
+	// 粒子容器 
+	creatParticle() {
+		const particleContaner = new PIXI.Container()
+		this.app.stage.addChild(particleContaner)
+		particleContaner.pivot.x = window.innerWidth/2;
+		particleContaner.pivot.y = window.innerHeight/2;
+
+		particleContaner.x = window.innerWidth/2;
+		particleContaner.y = window.innerHeight/2;
+		particleContaner.rotation = 35*Math.PI/180;
+		let particles = []; // 保存粒子
+		// 粒子颜色
+		const colors = [0xf1cf54, 0xb5cea8, 0xf1cf54, 0x818181, 0x000000];
+		for( let i=0; i<10; i++) {
+			const particle = new PIXI.Graphics();
+			const color = colors[Math.floor(Math.random() * colors.length)]
+			particle.beginFill(color)
+			// 随机位置画圆
+			const x = Math.random() * window.innerWidth;
+			const y = Math.random() * window.innerHeight;
+			particle.drawCircle(0, 0, 6);
+			particle.endFill();
+
+			let pItem = {
+				sx: x,
+				sy: y,
+				gr: particle
+			}
+			particle.x = x;
+			particle.y = y;
+			
+
+			particleContaner.addChild(particle)
+			particles.push(pItem);
+		}
+		this.particles = particles
 	}
 }
