@@ -30,6 +30,7 @@ class BrakeBanner{
 		loader.load();
 		loader.onComplete.add(() => {
 			that.createBike()
+			that.createButton()
 		})
 	}
 	createBike(){
@@ -59,5 +60,34 @@ class BrakeBanner{
 			app.stage.addChild(bikeContainer)
 			this.lever = lever
 			this.bikeContainer = bikeContainer
+	}
+	// 按钮容器
+	createButton() {
+		const {lever, bikeContainer, loader} = this
+		const btnContainer = new PIXI.Container()
+		this.app.stage.addChild(btnContainer)
+		let btn = new PIXI.Sprite(loader.resources['btn'].texture);
+		let btn_circle = new PIXI.Sprite(loader.resources['btn_circle'].texture);
+		let btn_circle2 = new PIXI.Sprite(loader.resources['btn_circle'].texture);
+		// 设置按钮圆心位置
+		btn.pivot.x = btn.width / 2
+		btn.pivot.y = btn.height / 2
+		btn_circle.pivot.x = btn_circle.width / 2
+		btn_circle.pivot.y = btn_circle.height / 2
+		
+		btn_circle2.pivot.x = btn_circle.width / 2
+		btn_circle2.pivot.y = btn_circle.height / 2
+
+		btn_circle.scale.x = btn_circle.scale.y = .8
+		// 缩小一半
+		btnContainer.scale.x = .5
+		btnContainer.scale.y = .5
+		// 位置偏移 
+		btnContainer.x = window.innerWidth - 300;
+		btnContainer.y = window.innerHeight - 350;
+		btnContainer.addChild(btn);
+		btnContainer.addChild(btn_circle);
+		btnContainer.addChild(btn_circle2);
+		this.btnContainer = btnContainer
 	}
 }
